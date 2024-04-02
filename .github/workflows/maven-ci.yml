@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  
+
   # Runs the Maven test phase on the project
   maven_test:
 
@@ -45,7 +45,13 @@ jobs:
         name: Jacoco coverage results
         path: target/site/jacoco
 
-  # Uploads dependency graph to GitHub to receive Dependabot alerts 
+    - name: Cache build
+      uses: actions/cache@v3
+      with:
+        key: cached-build-${{github.sha}}
+        path: .
+
+  # Uploads dependency graph to GitHub to receive Dependabot alerts
   update_dependence_graph:
 
     runs-on: ubuntu-latest
@@ -54,6 +60,11 @@ jobs:
       contents: read
 
     steps:
+    - name: Restore cached build
+      uses: actions/cache@v3
+      with:
+        key: cached-build-${{github.sha}}
+        path: .
 
     # https://github.com/marketplace/actions/maven-dependency-tree-dependency-submission
     - name: Update dependency graph
